@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Resource Navigator - सामुदायिक संसाधन नेविगेटर</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+        .pulse-animation { animation: pulse-ring 2s ease-in-out infinite; }
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .slide-up { animation: slide-up 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-green-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8 slide-up">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h1 class="text-4xl font-bold text-gray-800">Community Navigator</h1>
+            </div>
+            <p class="text-lg text-gray-600">सामुदायिक संसाधन नेविगेटर | Your Guide to Government Schemes & Local Resources</p>
+        </header>
+
+        <!-- Language Selector -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 slide-up">
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button onclick="setLanguage('en')" class="lang-btn px-6 py-3 rounded-lg font-semibold transition-all bg-blue-600 text-white hover:bg-blue-700">
+                    English
+                </button>
+                <button onclick="setLanguage('hi')" class="lang-btn px-6 py-3 rounded-lg font-semibold transition-all bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500">
+                    हिंदी (Hindi)
+                </button>
+                <button onclick="setLanguage('mr')" class="lang-btn px-6 py-3 rounded-lg font-semibold transition-all bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500">
+                    मराठी (Marathi)
+                </button>
+                <button onclick="setLanguage('ta')" class="lang-btn px-6 py-3 rounded-lg font-semibold transition-all bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500">
+                    தமிழ் (Tamil)
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Interface -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <!-- Voice Interface -->
+            <div class="bg-white rounded-xl shadow-lg p-8 slide-up">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    <span id="voice-title">Speak Your Question</span>
+                </h2>
+                
+                <div class="text-center">
+                    <button id="voiceBtn" onclick="toggleVoice()" class="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center mx-auto mb-4">
+                        <svg id="micIcon" class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+                    </button>
+                    <p id="voiceStatus" class="text-gray-600 font-medium">Click to start speaking</p>
+                    <div id="transcript" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[60px] text-left text-gray-700 italic"></div>
+                </div>
+            </div>
+
+            <!-- Text Interface -->
+            <div class="bg-white rounded-xl shadow-lg p-8 slide-up">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span id="text-title">Type Your Question</span>
+                </h2>
+                
+                <textarea id="textInput" 
+                    placeholder="Ask about government schemes, healthcare, education..."
+                    class="w-full h-32 p-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none mb-4"
+                ></textarea>
+                
+                <button onclick="submitTextQuery()" class="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold py-4 rounded-lg shadow-lg transition-all transform hover:scale-[1.02]">
+                    <span id="submit-btn">Get Help Now</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Access Categories -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 slide-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4" id="quick-access-title">Quick Access</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="selectCategory('health')" class="category-btn p-6 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center">
+                    <svg class="w-12 h-12 mx-auto mb-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span class="font-semibold text-gray-700 category-health">Healthcare</span>
+                </button>
+                
+                <button onclick="selectCategory('education')" class="category-btn p-6 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center">
+                    <svg class="w-12 h-12 mx-auto mb-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="font-semibold text-gray-700 category-education">Education</span>
+                </button>
+                
+                <button onclick="selectCategory('finance')" class="category-btn p-6 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center">
+                    <svg class="w-12 h-12 mx-auto mb-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-semibold text-gray-700 category-finance">Financial Aid</span>
+                </button>
+                
+                <button onclick="selectCategory('employment')" class="category-btn p-6 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center">
+                    <svg class="w-12 h-12 mx-auto mb-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-semibold text-gray-700 category-employment">Employment</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Response Area -->
+        <div id="responseArea" class="bg-white rounded-xl shadow-lg p-8 hidden slide-up">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-2xl font-bold text-gray-800" id="response-title">Your Resources</h2>
+                <button onclick="speakResponse()" class="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all" title="Listen to response">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="responseContent" class="prose max-w-none"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-8 text-gray-600">
+            <p class="mb-2">Built with ❤️ for community empowerment</p>
+            <p class="text-sm">Powered by Claude AI | Accessible • Multilingual • Voice-First</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+        let isListening = false;
+        let recognition = null;
+        let lastResponse = '';
+
+        // Language translations
+        const translations = {
+            en: {
+                voiceTitle: 'Speak Your Question',
+                textTitle: 'Type Your Question',
+                submitBtn: 'Get Help Now',
+                quickAccess: 'Quick Access',
+                responseTitle: 'Your Resources',
+                voiceStatus: 'Click to start speaking',
+                voiceListening: 'Listening... Speak now',
+                placeholder: 'Ask about government schemes, healthcare, education...',
+                categoryHealth: 'Healthcare',
+                categoryEducation: 'Education',
+                categoryFinance: 'Financial Aid',
+                categoryEmployment: 'Employment'
+            },
+            hi: {
+                voiceTitle: 'अपना सवाल बोलें',
+                textTitle: 'अपना सवाल लिखें',
+                submitBtn: 'अभी मदद पाएं',
+                quickAccess: 'त्वरित पहुंच',
+                responseTitle: 'आपके संसाधन',
+                voiceStatus: 'बोलना शुरू करने के लिए क्लिक करें',
+                voiceListening: 'सुन रहे हैं... अब बोलें',
+                placeholder: 'सरकारी योजनाओं, स्वास्थ्य सेवा, शिक्षा के बारे में पूछें...',
+                categoryHealth: 'स्वास्थ्य सेवा',
+                categoryEducation: 'शिक्षा',
+                categoryFinance: 'वित्तीय सहायता',
+                categoryEmployment: 'रोजगार'
+            },
+            mr: {
+                voiceTitle: 'तुमचा प्रश्न बोला',
+                textTitle: 'तुमचा प्रश्न लिहा',
+                submitBtn: 'आता मदत मिळवा',
+                quickAccess: 'जलद प्रवेश',
+                responseTitle: 'तुमची संसाधने',
+                voiceStatus: 'बोलणे सुरू करण्यासाठी क्लिक करा',
+                voiceListening: 'ऐकत आहे... आता बोला',
+                placeholder: 'सरकारी योजना, आरोग्य सेवा, शिक्षण याबद्दल विचारा...',
+                categoryHealth: 'आरोग्य सेवा',
+                categoryEducation: 'शिक्षण',
+                categoryFinance: 'आर्थिक मदत',
+                categoryEmployment: 'रोजगार'
+            },
+            ta: {
+                voiceTitle: 'உங்கள் கேள்வியைப் பேசுங்கள்',
+                textTitle: 'உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்',
+                submitBtn: 'உடனே உதவி பெறுங்கள்',
+                quickAccess: 'விரைவு அணுகல்',
+                responseTitle: 'உங்கள் வளங்கள்',
+                voiceStatus: 'பேசத் தொடங்க கிளிக் செய்யவும்',
+                voiceListening: 'கேட்கிறது... இப்போது பேசுங்கள்',
+                placeholder: 'அரசு திட்டங்கள், சுகாதாரம், கல்வி பற்றி கேளுங்கள்...',
+                categoryHealth: 'சுகாதாரம்',
+                categoryEducation: 'கல்வி',
+                categoryFinance: 'நிதி உதவி',
+                categoryEmployment: 'வேலைவாய்ப்பு'
+            }
+        };
+
+        // Knowledge base of schemes and resources
+        const resourceDatabase = {
+            health: {
+                en: [
+                    {
+                        name: "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+                        description: "Free health insurance coverage up to ₹5 lakh per family per year for hospitalization",
+                        eligibility: "Families identified as per SECC 2011 database",
+                        howToApply: "Visit nearest hospital with Ayushman Bharat card or get enrolled at Common Service Centers",
+                        contact: "Helpline: 14555, Website: pmjay.gov.in"
+                    },
+                    {
+                        name: "Janani Suraksha Yojana (JSY)",
+                        description: "Cash assistance for pregnant women for institutional delivery",
+                        eligibility: "All pregnant women, with special focus on BPL families",
+                        howToApply: "Register at your nearest Anganwadi or Primary Health Center",
+                        contact: "Contact: Local ASHA worker or PHC"
+                    }
+                ],
+                hi: [
+                    {
+                        name: "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना",
+                        description: "अस्पताल में भर्ती के लिए प्रति परिवार प्रति वर्ष ₹5 लाख तक मुफ्त स्वास्थ्य बीमा",
+                        eligibility: "SECC 2011 डेटाबेस के अनुसार पहचाने गए परिवार",
+                        howToApply: "आयुष्मान भारत कार्ड के साथ निकटतम अस्पताल पर जाएं या सामान्य सेवा केंद्रों पर नामांकन करें",
+                        contact: "हेल्पलाइन: 14555, वेबसाइट: pmjay.gov.in"
+                    },
+                    {
+                        name: "जननी सुरक्षा योजना",
+                        description: "संस्थागत प्रसव के लिए गर्भवती महिलाओं को नकद सहायता",
+                        eligibility: "सभी गर्भवती महिलाएं, बीपीएल परिवारों पर विशेष ध्यान",
+                        howToApply: "अपने निकटतम आंगनवाड़ी या प्राथमिक स्वास्थ्य केंद्र में पंजीकरण करें",
+                        contact: "संपर्क: स्थानीय आशा कार्यकर्ता या PHC"
+                    }
+                ]
+            },
+            education: {
+                en: [
+                    {
+                        name: "Mid-Day Meal Scheme",
+                        description: "Free nutritious meals to children in government and aided schools",
+                        eligibility: "All children studying in Classes I to VIII in government schools",
+                        howToApply: "Automatic enrollment upon admission",
+                        contact: "Contact: School Principal or District Education Officer"
+                    },
+                    {
+                        name: "National Scholarship Portal",
+                        description: "Various scholarships for students from SC/ST/OBC/Minorities",
+                        eligibility: "Based on category, income, and academic performance",
+                        howToApply: "Apply online at scholarships.gov.in",
+                        contact: "Website: scholarships.gov.in, Helpline: 0120-6619540"
+                    }
+                ],
+                hi: [
+                    {
+                        name: "मध्याह्न भोजन योजना",
+                        description: "सरकारी और सहायता प्राप्त स्कूलों में बच्चों को मुफ्त पौष्टिक भोजन",
+                        eligibility: "सरकारी स्कूलों में कक्षा I से VIII में पढ़ने वाले सभी बच्चे",
+                        howToApply: "प्रवेश पर स्वचालित नामांकन",
+                        contact: "संपर्क: स्कूल प्रधानाचार्य या जिला शिक्षा अधिकारी"
+                    },
+                    {
+                        name: "राष्ट्रीय छात्रवृत्ति पोर्टल",
+                        description: "SC/ST/OBC/अल्पसंख्यकों के छात्रों के लिए विभिन्न छात्रवृत्तियां",
+                        eligibility: "श्रेणी, आय और शैक्षणिक प्रदर्शन के आधार पर",
+                        howToApply: "scholarships.gov.in पर ऑनलाइन आवेदन करें",
+                        contact: "वेबसाइट: scholarships.gov.in, हेल्पलाइन: 0120-6619540"
+                    }
+                ]
+            },
+            finance: {
+                en: [
+                    {
+                        name: "Pradhan Mantri Jan Dhan Yojana (PMJDY)",
+                        description: "Free bank account with RuPay debit card and accident insurance",
+                        eligibility: "All citizens of India",
+                        howToApply: "Visit nearest bank branch with Aadhaar and address proof",
+                        contact: "Toll-free: 1800-11-0001, 1800-180-1111"
+                    },
+                    {
+                        name: "Pradhan Mantri Mudra Yojana",
+                        description: "Loans up to ₹10 lakh for micro-enterprises",
+                        eligibility: "Non-corporate, non-farm small/micro enterprises",
+                        howToApply: "Apply at banks, NBFCs, or MFIs with business plan",
+                        contact: "Website: mudra.org.in"
+                    }
+                ],
+                hi: [
+                    {
+                        name: "प्रधानमंत्री जन धन योजना",
+                        description: "रुपे डेबिट कार्ड और दुर्घटना बीमा के साथ मुफ्त बैंक खाता",
+                        eligibility: "भारत के सभी नागरिक",
+                        howToApply: "आधार और पते के प्रमाण के साथ निकटतम बैंक शाखा पर जाएं",
+                        contact: "टोल-फ्री: 1800-11-0001, 1800-180-1111"
+                    },
+                    {
+                        name: "प्रधानमंत्री मुद्रा योजना",
+                        description: "सूक्ष्म उद्यमों के लिए ₹10 लाख तक का ऋण",
+                        eligibility: "गैर-कॉर्पोरेट, गैर-कृषि लघु/सूक्ष्म उद्यम",
+                        howToApply: "व्यवसाय योजना के साथ बैंकों, एनबीएफसी या एमएफआई में आवेदन करें",
+                        contact: "वेबसाइट: mudra.org.in"
+                    }
+                ]
+            },
+            employment: {
+                en: [
+                    {
+                        name: "Mahatma Gandhi National Rural Employment Guarantee Act (MGNREGA)",
+                        description: "100 days of guaranteed wage employment per year",
+                        eligibility: "Adult members of rural households",
+                        howToApply: "Apply at local Gram Panchayat office",
+                        contact: "Website: nrega.nic.in, Contact local Panchayat"
+                    },
+                    {
+                        name: "Pradhan Mantri Kaushal Vikas Yojana (PMKVY)",
+                        description: "Free skill development training with certification",
+                        eligibility: "Youth aged 15-45 years",
+                        howToApply: "Register at pmkvyofficial.org or visit nearest training center",
+                        contact: "Toll-free: 08800-055555, Website: pmkvyofficial.org"
+                    }
+                ],
+                hi: [
+                    {
+                        name: "महात्मा गांधी राष्ट्रीय ग्रामीण रोजगार गारंटी अधिनियम",
+                        description: "प्रति वर्ष 100 दिनों के गारंटीशुदा मजदूरी रोजगार",
+                        eligibility: "ग्रामीण परिवारों के वयस्क सदस्य",
+                        howToApply: "स्थानीय ग्राम पंचायत कार्यालय में आवेदन करें",
+                        contact: "वेबसाइट: nrega.nic.in, स्थानीय पंचायत से संपर्क करें"
+                    },
+                    {
+                        name: "प्रधानमंत्री कौशल विकास योजना",
+                        description: "प्रमाणन के साथ मुफ्त कौशल विकास प्रशिक्षण",
+                        eligibility: "15-45 वर्ष की आयु के युवा",
+                        howToApply: "pmkvyofficial.org पर पंजीकरण करें या निकटतम प्रशिक्षण केंद्र पर जाएं",
+                        contact: "टोल-फ्री: 08800-055555, वेबसाइट: pmkvyofficial.org"
+                    }
+                ]
+            }
+        };
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                
+                recognition.onresult = (event) => {
+                    const transcript = Array.from(event.results)
+                        .map(result => result[0].transcript)
+                        .join('');
+                    
+                    document.getElementById('transcript').textContent = transcript;
+                    
+                    if (event.results[0].isFinal) {
+                        processQuery(transcript);
+                        isListening = false;
+                        updateVoiceButton();
+                    }
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    isListening = false;
+                    updateVoiceButton();
+                    document.getElementById('voiceStatus').textContent = 'Error occurred. Please try again.';
+                };
+                
+                recognition.onend = () => {
+                    isListening = false;
+                    updateVoiceButton();
+                };
+            }
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                alert('Speech recognition not supported in your browser. Please use text input or try Chrome/Edge.');
+                return;
+            }
+            
+            if (isListening) {
+                recognition.stop();
+                isListening = false;
+            } else {
+                recognition.lang = getLanguageCode(currentLanguage);
+                recognition.start();
+                isListening = true;
+                document.getElementById('transcript').textContent = '';
+            }
+            updateVoiceButton();
+        }
+
+        function updateVoiceButton() {
+            const btn = document.getElementById('voiceBtn');
+            const status = document.getElementById('voiceStatus');
+            const t = translations[currentLanguage];
+            
+            if (isListening) {
+                btn.classList.add('pulse-animation');
+                status.textContent = t.voiceListening;
+            } else {
+                btn.classList.remove('pulse-animation');
+                status.textContent = t.voiceStatus;
+            }
+        }
+
+        function getLanguageCode(lang) {
+            const codes = {
+                'en': 'en-IN',
+                'hi': 'hi-IN',
+                'mr': 'mr-IN',
+                'ta': 'ta-IN'
+            };
+            return codes[lang] || 'en-IN';
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update all buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-2', 'border-gray-200');
+            });
+            
+            event.target.classList.remove('bg-white', 'text-gray-700', 'border-2', 'border-gray-200');
+            event.target.classList.add('bg-blue-600', 'text-white');
+            
+            updateUILanguage();
+        }
+
+        function updateUILanguage() {
+            const t = translations[currentLanguage];
+            
+            document.getElementById('voice-title').textContent = t.voiceTitle;
+            document.getElementById('text-title').textContent = t.textTitle;
+            document.getElementById('submit-btn').textContent = t.submitBtn;
+            document.getElementById('quick-access-title').textContent = t.quickAccess;
+            document.getElementById('voiceStatus').textContent = t.voiceStatus;
+            document.getElementById('textInput').placeholder = t.placeholder;
+            
+            document.querySelector('.category-health').textContent = t.categoryHealth;
+            document.querySelector('.category-education').textContent = t.categoryEducation;
+            document.querySelector('.category-finance').textContent = t.categoryFinance;
+            document.querySelector('.category-employment').textContent = t.categoryEmployment;
+        }
+
+        function submitTextQuery() {
+            const query = document.getElementById('textInput').value.trim();
+            if (query) {
+                processQuery(query);
+            }
+        }
+
+        function selectCategory(category) {
+            const queries = {
+                health: {
+                    en: "Show me healthcare schemes",
+                    hi: "मुझे स्वास्थ्य योजनाएं दिखाएं",
+                    mr: "मला आरोग्य योजना दाखवा",
+                    ta: "சுகாதார திட்டங்களைக் காட்டு"
+                },
+                education: {
+                    en: "Show me education schemes",
+                    hi: "मुझे शिक्षा योजनाएं दिखाएं",
+                    mr: "मला शिक्षण योजना दाखवा",
+                    ta: "கல்வி திட்டங்களைக் காட்டு"
+                },
+                finance: {
+                    en: "Show me financial aid schemes",
+                    hi: "मुझे वित्तीय सहायता योजनाएं दिखाएं",
+                    mr: "मला आर्थिक मदत योजना दाखवा",
+                    ta: "நிதி உதவி திட்டங்களைக் காட்டு"
+                },
+                employment: {
+                    en: "Show me employment schemes",
+                    hi: "मुझे रोजगार योजनाएं दिखाएं",
+                    mr: "मला रोजगार योजना दाखवा",
+                    ta: "வேலைவாய்ப்பு திட்டங்களைக் காட்டு"
+                }
+            };
+            
+            processQuery(queries[category][currentLanguage]);
+        }
+
+        async function processQuery(query) {
+            // Determine category from query
+            const queryLower = query.toLowerCase();
+            let category = 'general';
+            
+            if (queryLower.includes('health') || queryLower.includes('hospital') || 
+                queryLower.includes('स्वास्थ्य') || queryLower.includes('आरोग्य') || 
+                queryLower.includes('சுகாதார')) {
+                category = 'health';
+            } else if (queryLower.includes('education') || queryLower.includes('school') || 
+                       queryLower.includes('शिक्षा') || queryLower.includes('शिक्षण') || 
+                       queryLower.includes('கல்வி')) {
+                category = 'education';
+            } else if (queryLower.includes('loan') || queryLower.includes('bank') || 
+                       queryLower.includes('money') || queryLower.includes('ऋण') || 
+                       queryLower.includes('வங்கி')) {
+                category = 'finance';
+            } else if (queryLower.includes('job') || queryLower.includes('employment') || 
+                       queryLower.includes('work') || queryLower.includes('रोजगार') || 
+                       queryLower.includes('வேலை')) {
+                category = 'employment';
+            }
+            
+            displayResults(category, query);
+        }
+
+        function displayResults(category, query) {
+            const responseArea = document.getElementById('responseArea');
+            const responseContent = document.getElementById('responseContent');
+            const t = translations[currentLanguage];
+            
+            responseArea.classList.remove('hidden');
+            document.getElementById('response-title').textContent = t.responseTitle;
+            
+            let html = `<div class="mb-4 p-4 bg-blue-50 rounded-lg">
+                <p class="text-gray-700"><strong>${currentLanguage === 'en' ? 'Your Query' : 
+                    currentLanguage === 'hi' ? 'आपका प्रश्न' : 
+                    currentLanguage === 'mr' ? 'तुमचा प्रश्न' : 
+                    'உங்கள் கேள்வி'}:</strong> ${query}</p>
+            </div>`;
+            
+            const lang = ['hi', 'mr', 'ta'].includes(currentLanguage) ? 'hi' : 'en';
+            const resources = resourceDatabase[category]?.[lang] || resourceDatabase.health[lang];
+            
+            resources.forEach((resource, index) => {
+                html += `
+                <div class="mb-6 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border-l-4 border-blue-600 slide-up">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">${index + 1}. ${resource.name}</h3>
+                    <div class="space-y-2 text-gray-700">
+                        <p><strong>${currentLanguage === 'en' ? 'Description' : 
+                            currentLanguage === 'hi' ? 'विवरण' : 
+                            currentLanguage === 'mr' ? 'वर्णन' : 
+                            'விளக்கம்'}:</strong> ${resource.description}</p>
+                        <p><strong>${currentLanguage === 'en' ? 'Eligibility' : 
+                            currentLanguage === 'hi' ? 'पात्रता' : 
+                            currentLanguage === 'mr' ? 'पात्रता' : 
+                            'தகுதி'}:</strong> ${resource.eligibility}</p>
+                        <p><strong>${currentLanguage === 'en' ? 'How to Apply' : 
+                            currentLanguage === 'hi' ? 'आवेदन कैसे करें' : 
+                            currentLanguage === 'mr' ? 'अर्ज कसा करावा' : 
+                            'எப்படி விண்ணப்பிக்க'}:</strong> ${resource.howToApply}</p>
+                        <p class="text-blue-600"><strong>${currentLanguage === 'en' ? 'Contact' : 
+                            currentLanguage === 'hi' ? 'संपर्क' : 
+                            currentLanguage === 'mr' ? 'संपर्क' : 
+                            'தொடர்பு'}:</strong> ${resource.contact}</p>
+                    </div>
+                </div>`;
+            });
+            
+            responseContent.innerHTML = html;
+            lastResponse = responseContent.textContent;
+            
+            // Scroll to response
+            responseArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function speakResponse() {
+            if ('speechSynthesis' in window && lastResponse) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(lastResponse);
+                utterance.lang = getLanguageCode(currentLanguage);
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Text-to-speech not supported in your browser.');
+            }
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initSpeechRecognition();
+            updateUILanguage();
+        };
+        
+        // Allow Enter key to submit
+        document.getElementById('textInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitTextQuery();
+            }
+        });
+    </script>
+</body>
+</html>
