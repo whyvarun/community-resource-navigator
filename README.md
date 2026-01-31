@@ -381,11 +381,6 @@ This project demonstrates:
 
 ## 📞 Support & Contact
 
-### For Users
-- **Helpline**: [To be added by deploying organization]
-- **Email**: community.navigator@example.org
-- **WhatsApp**: [Add number]
-
 ### For Developers
 - **GitHub**: [Repository URL]
 - **Documentation**: This file
